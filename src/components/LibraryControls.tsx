@@ -18,14 +18,14 @@ function LibraryControls({
   setSortDirection,
 }: LibraryControlsProps) {
   return (
-    <section className="bg-white rounded-lg shadow p-4">
+    <section className="bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow p-4">
       <h2 className="font-bold mb-2">Library Controls</h2>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value as "all" | Book["status"])}
-          className="border rounded p-2"
+          className="border rounded p-2 dark:bg-slate-800 dark:border-slate-700"
         >
           <option value="all">All</option>
           <option value="to-read">To Read</option>
@@ -38,7 +38,7 @@ function LibraryControls({
           onChange={(e) =>
             setSortBy(e.target.value as "title" | "author" | "dateAdded")
           }
-          className="border rounded p-2"
+          className="border rounded p-2 dark:bg-slate-800 dark:border-slate-700"
         >
           <option value="title">Title</option>
           <option value="author">Author</option>
@@ -48,7 +48,7 @@ function LibraryControls({
         <select
           value={sortDirection}
           onChange={(e) => setSortDirection(e.target.value as "asc" | "desc")}
-          className="border rounded p-2"
+          className="border rounded p-2 dark:bg-slate-800 dark:border-slate-700"
         >
           <option value="asc">Ascending</option>
           <option value="desc">Descending</option>

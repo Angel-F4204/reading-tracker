@@ -12,7 +12,7 @@ function StatsBar({
   averageRating,
 }: StatsBarProps) {
   return (
-    <section className="bg-white rounded-lg shadow p-4">
+    <section className="bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow p-4">
       <h2 className="font-bold mb-2">Reading Stats</h2>
 
       <div className="grid gap-2 sm:grid-cols-4">
