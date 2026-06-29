@@ -4,9 +4,15 @@ interface SearchResultsProps {
   results: Book[];
   loading: boolean;
   error: string;
+  onAddBook: (book: Book) => void;
 }
 
-function SearchResults({ results, loading, error }: SearchResultsProps) {
+function SearchResults({
+  results,
+  loading,
+  error,
+  onAddBook,
+}: SearchResultsProps) {
   if (loading) {
     return (
       <section className="bg-white rounded-lg shadow p-4">
@@ -52,6 +58,13 @@ function SearchResults({ results, loading, error }: SearchResultsProps) {
               <p className="text-sm text-gray-500">
                 {book.year ? book.year : "Unknown year"}
               </p>
+
+              <button
+                onClick={() => onAddBook(book)}
+                className="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+              >
+                Add to Library
+              </button>
             </div>
           </div>
         ))}
