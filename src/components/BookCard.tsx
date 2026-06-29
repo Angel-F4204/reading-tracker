@@ -4,9 +4,15 @@ interface BookCardProps {
   book: Book;
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: Book["status"]) => void;
+  onRatingChange: (id: string, rating: number) => void;
 }
 
-function BookCard({ book, onDelete, onStatusChange }: BookCardProps) {
+function BookCard({
+  book,
+  onDelete,
+  onStatusChange,
+  onRatingChange,
+}: BookCardProps) {
   return (
     <div className="border rounded-lg p-4 flex gap-4">
       {book.coverId ? (
@@ -40,9 +46,27 @@ function BookCard({ book, onDelete, onStatusChange }: BookCardProps) {
           <option value="finished">Finished</option>
         </select>
 
+        {book.status === "finished" && (
+          <div className="mt-3">
+            <p className="text-sm font-medium mb-1">Rating:</p>
+
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => onRatingChange(book.id, star)}
+                  className="text-2xl"
+                >
+                  {star <= book.rating ? "★" : "☆"}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <button
           onClick={() => onDelete(book.id)}
-          className="mt-3 ml-3 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+          className="mt-3 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
         >
           Delete
         </button>

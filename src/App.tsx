@@ -16,6 +16,22 @@ function App() {
   const [error, setError] = useState("");
   const [libraryMessage, setLibraryMessage] = useState("");
 
+  const toReadCount = library.filter(
+    (book) => book.status === "to-read",
+  ).length;
+  const readingCount = library.filter(
+    (book) => book.status === "reading",
+  ).length;
+  const finishedBooks = library.filter((book) => book.status === "finished");
+  const finishedCount = finishedBooks.length;
+
+  const ratedFinishedBooks = finishedBooks.filter((book) => book.rating > 0);
+  const averageRating =
+    ratedFinishedBooks.length === 0
+      ? 0
+      : ratedFinishedBooks.reduce((total, book) => total + book.rating, 0) /
+        ratedFinishedBooks.length;
+
   async function handleSearch() {
     if (search.trim() === "") {
       setError("Please enter a book title.");
@@ -55,7 +71,17 @@ function App() {
 
   function handleStatusChange(id: string, status: Book["status"]) {
     setLibrary(
-      library.map((book) => (book.id === id ? { ...book, status } : book)),
+      library.map((book) =>
+        book.id === id
+          ? { ...book, status, rating: status === "finished" ? book.rating : 0 }
+          : book,
+      ),
+    );
+  }
+
+  function handleRatingChange(id: string, rating: number) {
+    setLibrary(
+      library.map((book) => (book.id === id ? { ...book, rating } : book)),
     );
   }
 
@@ -83,7 +109,12 @@ function App() {
           </div>
         )}
 
-        <StatsBar />
+        <StatsBar
+          toReadCount={toReadCount}
+          readingCount={readingCount}
+          finishedCount={finishedCount}
+          averageRating={averageRating}
+        />
 
         <LibraryControls />
 
@@ -100,6 +131,7 @@ function App() {
                   book={book}
                   onDelete={handleDeleteBook}
                   onStatusChange={handleStatusChange}
+                  onRatingChange={handleRatingChange}
                 />
               ))}
             </div>
@@ -111,4 +143,3 @@ function App() {
 }
 
 export default App;
-
