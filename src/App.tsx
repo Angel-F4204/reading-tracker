@@ -4,6 +4,7 @@ import SearchBar from "./components/SearchBar";
 import StatsBar from "./components/StatsBar";
 import LibraryControls from "./components/LibraryControls";
 import SearchResults from "./components/SearchResults";
+import BookCard from "./components/BookCard";
 import { searchBooks } from "./services/openLibrary";
 import type { Book } from "./types/Book";
 
@@ -29,7 +30,7 @@ function App() {
       const books = await searchBooks(search);
       setResults(books);
     } catch {
-      setError("Something went wrong while searching. Please try again.");
+      setError("Something went wrong while searching.");
       setResults([]);
     } finally {
       setLoading(false);
@@ -37,17 +38,25 @@ function App() {
   }
 
   function handleAddBook(book: Book) {
-    const alreadyAdded = library.some(
-      (libraryBook) => libraryBook.id === book.id,
-    );
+    const exists = library.some((b) => b.id === book.id);
 
-    if (alreadyAdded) {
+    if (exists) {
       setLibraryMessage("This book is already in your library.");
       return;
     }
 
     setLibrary([...library, book]);
-    setLibraryMessage(`${book.title} was added to your library.`);
+    setLibraryMessage(`Added "${book.title}" to your library.`);
+  }
+
+  function handleDeleteBook(id: string) {
+    setLibrary(library.filter((book) => book.id !== id));
+  }
+
+  function handleStatusChange(id: string, status: Book["status"]) {
+    setLibrary(
+      library.map((book) => (book.id === id ? { ...book, status } : book)),
+    );
   }
 
   return (
@@ -69,9 +78,9 @@ function App() {
         />
 
         {libraryMessage && (
-          <section className="bg-green-100 border border-green-300 text-green-800 rounded-lg p-4">
+          <div className="bg-green-100 border border-green-300 text-green-800 rounded-lg p-3">
             {libraryMessage}
-          </section>
+          </div>
         )}
 
         <StatsBar />
@@ -79,21 +88,19 @@ function App() {
         <LibraryControls />
 
         <section className="bg-white rounded-lg shadow p-8">
-          <h2 className="text-2xl font-bold mb-4 text-center">My Library</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center">My Library</h2>
 
           {library.length === 0 ? (
-            <p className="text-gray-500 text-center">No books added yet.</p>
+            <p className="text-center text-gray-500">No books added yet.</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {library.map((book) => (
-                <div key={book.id} className="border rounded-lg p-4">
-                  <h3 className="font-bold">{book.title}</h3>
-                  <p className="text-gray-600">{book.author}</p>
-                  <p className="text-sm text-gray-500">
-                    {book.year ? book.year : "Unknown year"}
-                  </p>
-                  <p className="mt-2 font-medium">Status: To Read</p>
-                </div>
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  onDelete={handleDeleteBook}
+                  onStatusChange={handleStatusChange}
+                />
               ))}
             </div>
           )}
@@ -104,3 +111,4 @@ function App() {
 }
 
 export default App;
+
