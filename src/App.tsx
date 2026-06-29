@@ -16,6 +16,12 @@ function App() {
   const [error, setError] = useState("");
   const [libraryMessage, setLibraryMessage] = useState("");
 
+  const [filter, setFilter] = useState<"all" | Book["status"]>("all");
+  const [sortBy, setSortBy] = useState<"title" | "author" | "dateAdded">(
+    "dateAdded",
+  );
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+
   const toReadCount = library.filter(
     (book) => book.status === "to-read",
   ).length;
@@ -31,6 +37,23 @@ function App() {
       ? 0
       : ratedFinishedBooks.reduce((total, book) => total + book.rating, 0) /
         ratedFinishedBooks.length;
+
+  const visibleBooks = [...library]
+    .filter((book) => filter === "all" || book.status === filter)
+    .sort((a, b) => {
+      let comparison = 0;
+
+      if (sortBy === "title") {
+        comparison = a.title.localeCompare(b.title);
+      } else if (sortBy === "author") {
+        comparison = a.author.localeCompare(b.author);
+      } else {
+        comparison =
+          new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
+      }
+
+      return sortDirection === "asc" ? comparison : -comparison;
+    });
 
   async function handleSearch() {
     if (search.trim() === "") {
@@ -61,7 +84,7 @@ function App() {
       return;
     }
 
-    setLibrary([...library, book]);
+    setLibrary([...library, { ...book, dateAdded: new Date().toISOString() }]);
     setLibraryMessage(`Added "${book.title}" to your library.`);
   }
 
@@ -116,16 +139,27 @@ function App() {
           averageRating={averageRating}
         />
 
-        <LibraryControls />
+        <LibraryControls
+          filter={filter}
+          setFilter={setFilter}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          sortDirection={sortDirection}
+          setSortDirection={setSortDirection}
+        />
 
         <section className="bg-white rounded-lg shadow p-8">
           <h2 className="text-2xl font-bold mb-6 text-center">My Library</h2>
 
           {library.length === 0 ? (
             <p className="text-center text-gray-500">No books added yet.</p>
+          ) : visibleBooks.length === 0 ? (
+            <p className="text-center text-gray-500">
+              No books match this filter.
+            </p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {library.map((book) => (
+              {visibleBooks.map((book) => (
                 <BookCard
                   key={book.id}
                   book={book}
